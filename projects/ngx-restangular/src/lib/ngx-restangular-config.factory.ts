@@ -18,6 +18,7 @@ import {
   isEmpty,
   forEach,
 } from 'lodash';
+import { RestangularFields } from './restangular-fields';
 
 export function RestangularConfigurer(object, configuration) {
   object.configuration = configuration;
@@ -186,58 +187,7 @@ export function RestangularConfigurer(object, configuration) {
    *  All of this fields except for id, are handled (and created) by Restangular. By default,
    *  the field values will be id, route and parentResource respectively
    */
-  configuration.restangularFields = configuration.restangularFields || {
-    id: 'id',
-    route: 'route',
-    parentResource: 'parentResource',
-    restangularCollection: 'restangularCollection',
-    cannonicalId: '__cannonicalId',
-    etag: 'restangularEtag',
-    selfLink: 'href',
-    get: 'get',
-    getList: 'getList',
-    put: 'put',
-    post: 'post',
-    remove: 'remove',
-    head: 'head',
-    trace: 'trace',
-    options: 'options',
-    patch: 'patch',
-    getRestangularUrl: 'getRestangularUrl',
-    getRequestedUrl: 'getRequestedUrl',
-    putElement: 'putElement',
-    addRestangularMethod: 'addRestangularMethod',
-    getParentList: 'getParentList',
-    clone: 'clone',
-    ids: 'ids',
-    httpConfig: '_$httpConfig',
-    reqParams: 'reqParams',
-    one: 'one',
-    all: 'all',
-    several: 'several',
-    oneUrl: 'oneUrl',
-    allUrl: 'allUrl',
-    customPUT: 'customPUT',
-    customPATCH: 'customPATCH',
-    customPOST: 'customPOST',
-    customDELETE: 'customDELETE',
-    customGET: 'customGET',
-    customGETLIST: 'customGETLIST',
-    customOperation: 'customOperation',
-    doPUT: 'doPUT',
-    doPATCH: 'doPATCH',
-    doPOST: 'doPOST',
-    doDELETE: 'doDELETE',
-    doGET: 'doGET',
-    doGETLIST: 'doGETLIST',
-    fromServer: 'fromServer',
-    withConfig: 'withConfig',
-    withHttpConfig: 'withHttpConfig',
-    singleOne: 'singleOne',
-    plain: 'plain',
-    save: 'save',
-    restangularized: 'restangularized'
-  };
+  configuration.restangularFields = configuration.restangularFields || RestangularFields;
   object.setRestangularFields = function (resFields) {
     configuration.restangularFields =
       extend({}, configuration.restangularFields, resFields);

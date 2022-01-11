@@ -21,12 +21,13 @@ import {
   includes
 } from 'lodash';
 
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
 import { RESTANGULAR } from './ngx-restangular.config';
 import { RestangularHttp } from './ngx-restangular-http';
 import { RestangularConfigurer } from './ngx-restangular-config.factory';
+import { RestCollection, RestElement, RestProvider } from './interfaces';
 
 @Injectable()
 export class Restangular {
@@ -73,7 +74,7 @@ export class Restangular {
   addElementTransformer: any;
   extendCollection: any;
   extendModel: any;
-  copy;
+  copy: <T>(fromElement: T) => T;
   configuration;
   service;
   id;
@@ -95,24 +96,24 @@ export class Restangular {
   getRestangularUrl;
   getRequestedUrl;
   putElement;
-  addRestangularMethod;
+  addRestangularMethod: (name: string, operation: string, path?: string, params?: any, headers?: {[key: string]: string}, elem?: any) => void;
   getParentList;
   clone;
   ids;
   httpConfig;
   reqParams;
-  one;
-  all;
-  several;
-  oneUrl;
-  allUrl;
-  customPUT;
-  customPATCH;
-  customPOST;
-  customDELETE;
-  customGET;
-  customGETLIST;
-  customOperation;
+  one: <T = unknown>(route: string, id?: number | string) => RestElement<T>;
+  all: <T = unknown>(route: string) => RestCollection<T>;
+  several: <T = unknown>(route: string, ...id: (number | string)[]) => RestCollection<T>;
+  oneUrl: <T = unknown>(route: string, url: string) => RestElement<T>;
+  allUrl: <T = unknown>(route: string, url: string) => RestCollection<T>;
+  customPUT: <T = unknown>(elem?: any, path?: string, params?: any, headers?: {[key: string]: string}) => Observable<RestElement<T>>;
+  customPATCH: <T = unknown>(elem?: any, path?: string, params?: any, headers?: {[key: string]: string}) => Observable<RestElement<T>>;
+  customPOST: <T = unknown>(elem?: any, path?: string, params?: any, headers?: {[key: string]: string}) => Observable<RestElement<T>>;
+  customDELETE: (path: string, params?: any, headers?: {[key: string]: string}) => Observable<any>;
+  customGET: <T = unknown>(path: string, params?: any, headers?: {[key: string]: string}) => Observable<RestElement<T>>;
+  customGETLIST: <T = unknown>(path: string, params?: any, headers?: {[key: string]: string}) => Observable<RestCollection<T>>;
+  customOperation: (operation: string, path: string, params?: any, headers?: {[key: string]: string}) => Observable<any>;
   doPUT;
   doPATCH;
   doPOST;
@@ -120,14 +121,14 @@ export class Restangular {
   doGET;
   doGETLIST;
   fromServer;
-  withConfig;
+  withConfig: (config: RestProvider) => Restangular;
   withHttpConfig;
   singleOne;
   plain;
   save;
   restangularized;
-  restangularizeElement;
-  restangularizeCollection;
+  restangularizeElement: <T = unknown>(parent: any, element: any, route: string, collection?: any, reqParams?: any) => RestElement<T>;
+  restangularizeCollection: <T = unknown>(parent: any, element: any, route: string) => RestCollection<T>;
 
   constructor(
     @Optional() @Inject(RESTANGULAR) public configObj,
