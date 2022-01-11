@@ -13,9 +13,7 @@ You can check post about using ngx-restangular in [RESTful API Angular Solution]
 
 # Table of contents
 
-- [How do I add this to my project in angular 5+?](#how-do-i-add-this-to-my-project-in-angular-5)
-- [How do I add this to my project in angular 4?](#how-do-i-add-this-to-my-project-in-angular-4)
-- [How do I add this to my project in angular 2?](#how-do-i-add-this-to-my-project-in-angular-2)
+- [How do I add this to my project in angular 5+?](#how-do-i-add-this-to-my-project)
 
 - [Dependencies](#dependencies)
 - [Starter Guide](#starter-guide)
@@ -83,7 +81,7 @@ You can check post about using ngx-restangular in [RESTful API Angular Solution]
 **[Back to top](#table-of-contents)**
 
 
-# How do I add this to my project in angular 5+?
+# How do I add this to my project?
 
 You can download this by npm and running `npm install @brakebein/ngx-restangular`.
 
@@ -100,10 +98,10 @@ Restangular depends on Angular 2+ and Lodash.
 ## Quick Configuration (For Lazy Readers)
 This is all you need to start using all the basic Restangular features.
 
-````javascript
+```typescript
 import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
-import { RestangularModule, Restangular } from 'ngx-restangular';
+import { RestangularModule, Restangular } from '@brakebein/ngx-restangular';
 
 // Function for setting the default restangular configuration
 export function RestangularConfigFactory (RestangularProvider) {
@@ -138,7 +136,8 @@ export class OtherComponent {
     // GET http://api.test.local/v1/users/2/accounts
     this.restangular.one('users', 2).all('accounts').getList();
   }
-````
+}
+```
 **[Back to top](#table-of-contents)**
 
 ## Using Restangular
@@ -149,7 +148,7 @@ There are 3 ways of creating a main Restangular object.
 The first one and most common one is by stating the main route of all requests.
 The second one is by stating the main route and object of all requests.
 
-````javascript
+```javascript
 // Only stating main route
 Restangular.all('accounts')
 
@@ -158,7 +157,7 @@ Restangular.one('accounts', 1234)
 
 // Gets a list of all of those accounts
 Restangular.several('accounts', 1234, 123, 12345);
-````
+```
 
 **[Back to top](#table-of-contents)**
 
@@ -166,7 +165,7 @@ Restangular.several('accounts', 1234, 123, 12345);
 
 Now that we have our main Object let's start playing with it.
 
-````javascript
+```typescript
 // AppModule is the main entry point into Angular2 bootstraping process
 @NgModule({
   bootstrap: [ AppComponent ],
@@ -317,14 +316,14 @@ export class OtherComponent {
     account.customPOST({name: "My Message"}, "messages", {param: "myParam"}, {})
   }
 }
-````
+```
 
 **[Back to top](#table-of-contents)**
 
 ### Here is Example of code with using promises!
 
 
-````javascript
+```typescript
 @Component({
   ...
 })
@@ -442,7 +441,92 @@ export class OtherComponent {
     account.customPOST({name: "My Message"}, "messages", {param: "myParam"}, {})
   }
 }
-````
+```
+
+**[Back to top](#table-of-contents)**
+
+### Using TypeScript generics
+
+```typescript
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs'; 
+import { Restangular, RestCollection, RestElement } from '@brakebein/ngx-restangular';
+
+interface IResource {
+  id: string;
+  value: any;
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class ApiService {
+
+  constructor(
+    private rest: Restangular
+  ) { }
+  
+  getData(): Observable<RestCollection<IResource>> {
+    this.rest
+      .all<IResource>('resource')
+      .getList();
+  }
+  
+  getItem(id: string|number): Observable<RestElement<IResource>> {
+    this.rest
+      .one<IResource>('resource', id)
+      .get();
+  }
+  
+}
+
+// in your component
+@Component({
+  selector: 'app-some',
+  templateUrl: './some.component.html'
+})
+export class SomeComponent implements OnInit {
+  
+  constructor(
+    private apiService: ApiService
+  ) { }
+  
+  ngOnInit(): void {
+    
+    this.apiService.getData()
+      .subscribe(resources => {
+        
+        // RestCollection has all Array methods
+        resources.forEach(res => { console.log(res); })
+        const firstResource: RestElement<IResource> = resources[0];
+        
+        // and Restangular methods
+        const plain: IResource[] = resources.plain();
+        
+        resources.post<IResource>({value: 'foo'})
+          .subscribe(resource => {
+            console.log('Added resource', resource);
+          });
+        
+      });
+    
+    this.apiService.getItem(1)
+      .subscribe(resource => {
+        
+        // RestElement has all properties of returned data
+        console.log(resource.value);
+        
+        // and Restangular methods
+        const plain: IResource = resource.plain();
+        
+        resource.patch({value: 'bar'});
+        
+      });
+    
+  }
+  
+}
+```
 
 **[Back to top](#table-of-contents)**
 
@@ -456,7 +540,7 @@ You can set all these configurations in **[RestangularModule](#how-to-configure-
 #### withConfig
 You can configure Restangular "withConfig" like in example below, you can also configure them globally [RestangularModule](#how-to-configure-them-globally) or in service with [withConfig](#how-to-create-a-restangular-service-with-a-different-configuration-from-the-global-one)
  
-````javascript
+```typescript
 // Function for settting the default restangular configuration
 export function RestangularConfigFactory (RestangularProvider) {
   RestangularProvider.setBaseUrl('http://www.google.com');
@@ -486,7 +570,7 @@ export class OtherComponent {
     }).all('users').getList()
   }
 };
-````
+```
 
 #### setBaseUrl
 The base URL for all calls to your API. For example if your URL for fetching accounts is http://example.com/api/v1/accounts, then your baseUrl is `/api/v1`. The default baseUrl is an empty string which resolves to the same url that Angular2 is running, but you can also set an absolute url like `http://api.example.com/api/v1` if you need to set another domain.
@@ -532,12 +616,12 @@ This callback is a function that has 4 parameters:
 
 This can be used together with `addRestangularMethod` (Explained later) to add custom methods to an element
 
-````javascript
+```javascript
 service.setOnElemRestangularized((element, isCollection, what, Restangular) => {
   element.newField = "newField";
   return element;
 });
-````
+```
 
 #### addResponseInterceptor
 The responseInterceptor is called after we get each response from the server. It's a function that receives this arguments:
@@ -552,12 +636,11 @@ Some of the use cases of the responseInterceptor are handling wrapped responses 
 
 The responseInterceptor must return the restangularized data element.
 
-````javascript
- RestangularProvider.addResponseInterceptor((data, operation, what, url, response)=> {
-       return data;
-     });
- });
-````
+```typescript
+RestangularProvider.addResponseInterceptor((data, operation, what, url, response) => {
+  return data;
+});
+```
 
 #### addFullRequestInterceptor
 This adds a new fullRequestInterceptor. The fullRequestInterceptor is similar to the `requestInterceptor` but more powerful. It lets you change the element, the request parameters and the headers as well.
@@ -569,15 +652,15 @@ It can return an object with any (or all) of following properties:
 * **params**: The request parameters to send
 * **element**: The element to send
 
-````javascript
-RestangularProvider.addFullRequestInterceptor((element, operation, path, url, headers, params)=> {
-   return {
-     params: Object.assign({}, params, {sort:"name"}),
-     headers: headers,
-     element: element
-   }
- });
-````
+```javascript
+RestangularProvider.addFullRequestInterceptor((element, operation, path, url, headers, params) => {
+  return {
+    params: Object.assign({}, params, {sort:"name"}),
+    headers: headers,
+    element: element
+  }
+});
+```
 If a property isn't returned, the one sent is used.
 
 #### addErrorInterceptor
@@ -586,7 +669,7 @@ The errorInterceptor is called whenever there's an error. It's a function that r
 The errorInterceptor function, whenever it returns false, prevents the observable linked to a Restangular request to be executed. All other return values (besides false) are ignored and the observable follows the usual path, eventually reaching the success or error hooks.
 
 The refreshAccesstoken function must return observable. It`s function that will be done before repeating the request, there you can make some actions. In switchMap you might do some transformations to request.
-````javascript
+```typescript
 // Function for settting the default restangular configuration
 export function RestangularConfigFactory (RestangularProvider, authService) {
   RestangularProvider.setBaseUrl('http://api.test.com/v1');
@@ -630,7 +713,7 @@ export function RestangularConfigFactory (RestangularProvider, authService) {
     RestangularModule.forRoot([authService], RestangularConfigFactory),
   ],
 })
-````
+```
 
 #### setRestangularFields
 
@@ -651,9 +734,9 @@ All of these fields except for `id` and `selfLink` are handled by Restangular, s
 
 You can now Override HTTP Methods. You can set here the array of methods to override. All those methods will be sent as POST and Restangular will add an X-HTTP-Method-Override header with the real HTTP method we wanted to do.
 
-````javascript
+```javascript
 RestangularProvider.setMethodOverriders(["Get","Put"]);
-````
+```
 
 #### setDefaultRequestParams
 
@@ -663,7 +746,7 @@ Additionally, if you want to configure request params per method, you can use `r
 
 Supported method to configure are: remove, get, post, put, common (all)
 
-````javascript
+```javascript
 // set params for multiple methods at once
 RestangularProvider.setDefaultRequestParams(['remove', 'post'], {confirm: true});
 
@@ -672,19 +755,19 @@ RestangularProvider.setDefaultRequestParams('get', {limit: 10});
 
 // or for all supported request methods
 RestangularProvider.setDefaultRequestParams({apikey: "secret key"});
-````
+```
 
 #### setFullResponse
 
 You can set fullResponse to true to get the whole response every time you do any request. The full response has the restangularized data in the `data` field, and also has the headers and config sent. By default, it's set to false. Please note that in order for Restangular to access custom HTTP headers, your server must respond having the `Access-Control-Expose-Headers:` set.
 
-````javascript
+```javascript
 // set params for multiple methods at once
 RestangularProvider.setFullResponse(true);
-````
+```
 
 Or set it per service
-````javascript
+```typescript
 // Restangular factory that uses setFullResponse
 export const REST_FUL_RESPONSE = new InjectionToken<any>('RestFulResponse');
 export function RestFulResponseFactory(restangular: Restangular) {
@@ -726,12 +809,12 @@ export class OtherComponent {
     });
   }
 }
-````
+```
 
 #### setDefaultHeaders
 
 You can set default Headers to be sent with every request. Send format: {header_name: header_value}
-````javascript
+```typescript
 import { NgModule } from '@angular/core';
 import { RestangularModule, Restangular } from 'ngx-restangular';
 
@@ -750,7 +833,7 @@ export function RestangularConfigFactory (RestangularProvider) {
 })
 export class AppModule {
 }
-````
+```
 
 #### setRequestSuffix
 
@@ -772,9 +855,9 @@ You can set here if you want to URL Encode IDs or not. By default, it's true.
 
 You can also access the configuration via `RestangularModule` and `Restangular.provider` via the `configuration` property if you don't want to use the setters. Check it out:
 
-````js
+```typescript
 RestangularProvider.configuration.requestSuffix = '/';
-````
+```
 
 **[Back to top](#table-of-contents)**
 
@@ -784,7 +867,7 @@ You can configure this in either the `AppModule`.
 
 #### Configuring in the `AppModule`
 
-````javascript
+```typescript
 import { RestangularModule } from 'ngx-restangular';
 
 // Function for settting the default restangular configuration
@@ -805,14 +888,14 @@ export function RestangularConfigFactory (RestangularProvider) {
 })
 export class AppModule {
 }
-````
+```
 
 **[Back to top](#table-of-contents)**
 
 
 #### Configuring in the `AppModule` with Dependency Injection applied
 
-````javascript
+```typescript
 import { RestangularModule } from 'ngx-restangular';
 
 // Function for settting the default restangular configuration
@@ -838,14 +921,14 @@ export function RestangularConfigFactory (RestangularProvider, http) {
 })
 export class AppModule {
 }
-````
+```
 
 **[Back to top](#table-of-contents)**
 
 ### How to create a Restangular service with a different configuration from the global one
 Let's assume that for most requests you need some configuration (The global one), and for just a bunch of methods you need another configuration. In that case, you'll need to create another Restangular service with this particular configuration. This scoped configuration will inherit all defaults from the global one. Let's see how.
 
-````javascript
+```typescript
 // Function for settting the default restangular configuration
 export function RestangularConfigFactory (RestangularProvider) {
   RestangularProvider.setBaseUrl('http://www.google.com');
@@ -897,7 +980,7 @@ export class OtherComponent {
     RestangularBing.all('users').getList()
   }
 };
-````
+```
 
 **[Back to top](#table-of-contents)**
 
@@ -907,7 +990,7 @@ There're some times where you want to use Restangular but you don't want to expo
 
 Let's see how it works:
 
-````js
+```typescript
 // Restangular factory that uses Users
 export const USER_REST = new InjectionToken<any>('UserRest');
 export function UserRestFactory(restangular: Restangular) {
@@ -945,7 +1028,7 @@ export class OtherComponent {
     })
   }
 }
-````
+```
 
 We can also use Nested RESTful resources with this:
 
@@ -1007,12 +1090,12 @@ These are the methods that can be called on the Restangular object.
 * **patch(object, [queryParams, headers])**: Does a PATCH
 * **remove([queryParams, headers])**: Does a DELETE. By default, `remove` sends a request with an empty object, which may cause problems with some servers or browsers. [This](https://github.com/mgonto/restangular/issues/193) shows how to configure RESTangular to have no payload.
 * **putElement(index, params, headers)**: Puts the element on the required index and returns a observable of the updated new array
-````js
+```js
 Restangular.all('users').getList()
 .subscribe( users => {
   users.putElement(2, {'name': 'new name'});
 });
-````
+```
 * **getRestangularUrl()**: Gets the URL of the current object.
 * **getRequestedUrl()**: Gets the real URL the current object was requested with (incl. GET parameters). Will equal getRestangularUrl() when no parameters were used, before calling `getList()`, or when using on a nested child.
 * **one(route, id)**: Used for RequestLess connections and URL Building. See section below.
@@ -1036,13 +1119,13 @@ Restangular.all('users').getList()
 
 Let's see an example of this:
 
-````javascript
+```javascript
 // GET /accounts/123/messages
 Restangular.one("accounts", 123).customGET("messages")
 
 // GET /accounts/messages?param=param2
 Restangular.all("accounts").customGET("messages", {param: "param2"})
-````
+```
 
 **[Back to top](#table-of-contents)**
 
@@ -1055,22 +1138,22 @@ Before modifying an object, we sometimes want to copy it and then modify the cop
 
 If you want to use values directly in templates use `AsyncPipe`
 
-````js
+```js
 this.accounts = this.restangular.all('accounts').getList();
-````
+```
 
-````html
+```html
 <tr *ngFor="let account of accounts | async">
   <td>{{account.fullName}}</td>
 </tr>
-````
+```
 
 **[Back to top](#table-of-contents)**
 
 ## URL Building
 Sometimes, we have a lot of nested entities (and their IDs), but we just want the last child. In those cases, doing a request for everything to get the last child is overkill. For those cases, I've added the possibility to create URLs using the same API as creating a new Restangular object. This connections are created without making any requests. Let's see how to do this:
 
-````javascript
+```javascript
 
 var restangularSpaces = Restangular.one("accounts",123).one("buildings", 456).all("spaces");
 
@@ -1085,7 +1168,7 @@ Restangular.one("accounts", 123).one("buildings", 456).all("spaces").post({name:
 
 // DELETE /accounts/123/buildings/456
 Restangular.one("accounts", 123).one("buildings", 456).remove();
-````
+```
 
 **[Back to top](#table-of-contents)**
 
@@ -1095,7 +1178,7 @@ Let's assume that your API needs some custom methods to work. If that's the case
 
 This can be used together with the hook `addElementTransformer` to do some neat stuff. Let's see an example to learn this:
 
-````javascript
+```typescript
 // Function for settting the default restangular configuration
 export function RestangularConfigFactory (RestangularProvider) {
   // It will transform all building elements, NOT collections
@@ -1144,8 +1227,7 @@ Restangular.one('buildings', 123).evaluate({myParam: 'param'}, {'myHeader': 'spe
 
 // Here the body of the POST is going to be {key: value} as POST is an unsafe operation
 Restangular.all('users').login({key: value});
-
-````
+```
 
 **[Back to top](#table-of-contents)**
 
@@ -1154,25 +1236,25 @@ Restangular.all('users').login({key: value});
 Create custom methods for your collection using Restangular.extendCollection(). This is an alias for:
 
 ```js
-  RestangularProvider.addElementTransformer(route, true, fn);
+RestangularProvider.addElementTransformer(route, true, fn);
 ```
 
 ### Example:
 ```js
-  // create methods for your collection
-  Restangular.extendCollection('accounts', function(collection) {
-    collection.totalAmount = function() {
-      // implementation here
-    };
+// create methods for your collection
+Restangular.extendCollection('accounts', function(collection) {
+  collection.totalAmount = function() {
+    // implementation here
+  };
 
-    return collection;
-  });
+  return collection;
+});
 
-  var accounts$ = Restangular.all('accounts').getList();
+var accounts$ = Restangular.all('accounts').getList();
 
-  accounts$.subscribe( accounts => {
-    accounts.totalAmount(); // invoke your custom collection method
-  });
+accounts$.subscribe( accounts => {
+  accounts.totalAmount(); // invoke your custom collection method
+});
 ```
 
 **[Back to top](#table-of-contents)**
@@ -1182,23 +1264,23 @@ Create custom methods for your collection using Restangular.extendCollection(). 
 Create custom methods for your models using Restangular.extendModel(). This is an alias for:
 
 ```js
-  RestangularProvider.addElementTransformer(route, false, fn);
+RestangularProvider.addElementTransformer(route, false, fn);
 ```
 
 **[Back to top](#table-of-contents)**
 
 ### Example:
 ```js
-  Restangular.extendModel('accounts', function(model) {
-    model.prettifyAmount = function() {};
-    return model;
-  });
+Restangular.extendModel('accounts', function(model) {
+  model.prettifyAmount = function() {};
+  return model;
+});
 
-  var account$ = Restangular.one('accounts', 1).get();
+var account$ = Restangular.one('accounts', 1).get();
 
-  account$.subscribe(function(account) {
-    account.prettifyAmount(); // invoke your custom model method
-  });
+account$.subscribe(function(account) {
+  account.prettifyAmount(); // invoke your custom model method
+});
 ```
 
 **[Back to top](#table-of-contents)**
@@ -1209,19 +1291,19 @@ Create custom methods for your models using Restangular.extendModel(). This is a
 
 Errors can be checked on the second argument of the subscribe.
 
-````javascript
+```javascript
 Restangular.all("accounts").getList().subscribe( response => {
   console.log("All ok");
 }, errorResponse => {
   console.log("Error with status code", errorResponse.status);
 });
-````
+```
 
 #### **I need to send Authorization token in EVERY Restangular request, how can I do this?**
 
 You can use `setDefaultHeaders` or `addFullRequestInterceptor`
 
-````javascript
+```typescript
 import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 import { RestangularModule } from 'ngx-restangular';
@@ -1256,7 +1338,7 @@ export function RestangularConfigFactory (RestangularProvider, authService) {
 })
 export class AppModule {
 }
-````
+```
 **[Back to top](#table-of-contents)**
 
 
@@ -1268,14 +1350,14 @@ You can use `defaultHeaders` property for this. `defaultsHeaders` can be scoped 
 
 You must add a requestInterceptor for this.
 
-````js
+```js
 RestangularProvider.setRequestInterceptor(function(elem, operation) {
   if (operation === "remove") {
      return null;
   }
   return elem;
-})
-````
+});
+```
 
 #### **I use Mongo and the ID of the elements is `_id` not `id` as the default. Therefore requests are sent to undefined routes**
 
@@ -1291,26 +1373,26 @@ RestangularProvider.setRestangularFields({
 
 In some cases, people have different ID name for each entity. For example, they have CustomerID for customer and EquipmentID for Equipment. If that's the case, you can override Restangular's getIdFromElem. For that, you need to do:
 
-````js
+```js
 RestangularProvider.configuration.getIdFromElem = function(elem) {
   // if route is customers ==> returns customerID
   return elem[_.initial(elem.route).join('') + "ID"];
 }
-````
+```
 With that, you'd get what you need :)
 
 #### **How can I send files in my request using Restangular?**
 
 This can be done using the customPOST / customPUT method. Look at the following example:
-````js
+```js
 Restangular.all('users')
-.customPOST(formData, undefined, undefined, { 'Content-Type': undefined });
-````
+  .customPOST(formData, undefined, undefined, { 'Content-Type': undefined });
+```
 This basically tells the request to use the *Content-Type: multipart/form-data* as the header. Also *formData* is the body of the request, be sure to add all the params here, including the File you want to send of course.
 
 #### **How do I handle CRUD operations in a List returned by Restangular?**
 
-````javascript
+```javascript
 Restangular.all('users').getList().subscribe( users => {
   this.users = users;
   var userWithId = _.find(users, function(user) {
@@ -1327,7 +1409,7 @@ Restangular.all('users').getList().subscribe( users => {
   });
 
 });
-````
+```
 
 #### Removing an element from a collection, keeping the collection restangularized
 
@@ -1346,7 +1428,7 @@ userWithId.remove().subscribe( () => {
 
 In order to get this done, you need to use the `responseExtractor`. You need to set a property there that will point to the original response received. Also, you need to actually copy this response as that response is the one that's going to be `restangularized` later
 
-````javascript
+```javascript
 RestangularProvider.setResponseExtractor( (response) => {
   var newResponse = response;
   if (_.isArray(response)) {
@@ -1359,22 +1441,21 @@ RestangularProvider.setResponseExtractor( (response) => {
 
   return newResponse;
 });
-````
+```
 Alternatively, if you just want the stripped out response on any given call, you can use the .plain() method, doing something like this:
 
-````javascript
-
+```javascript
 this.showData = function () {
   baseUrl.post(someData).subscribe( (response) => {
     console.log(response.plain());
   });
 };
-````
+```
 
 **[Back to top](#table-of-contents)**
 
 #### How can add withCredentials params to requests?
-````javascript
+```typescript
 // Function for settting the default restangular configuration
 export function RestangularConfigFactory (RestangularProvider) {
   // Adding withCredential parametr to all Restangular requests
@@ -1392,7 +1473,7 @@ export function RestangularConfigFactory (RestangularProvider) {
   ]
 })
 export class AppModule {}
-````
+```
 
 **[Back to top](#table-of-contents)**
 
