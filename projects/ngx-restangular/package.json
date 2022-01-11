@@ -51,9 +51,9 @@
   },
   "homepage": "https://github.com/2muchcoffeecom/ngx-restangular#readme",
   "peerDependencies": {
-    "@angular/core": "^10.0.0",
-    "@angular/common": "^10.0.0",
-    "@angular/platform-browser": "^10.0.0",
+    "@angular/core": "^12.0.0",
+    "@angular/common": "^12.0.0",
+    "@angular/platform-browser": "^12.0.0",
     "rxjs": "^6.0"
   },
   "dependencies": {
