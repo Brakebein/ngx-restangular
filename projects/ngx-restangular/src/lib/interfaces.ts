@@ -68,7 +68,7 @@ interface IElement<T> extends RestObject {
   post<P = unknown>(
     subElement: string, elementToPost: any, queryParams?: any, headers?: {[key: string]: string}
   ): Observable<RestElement<P>>;
-  patch<P = unknown>(object?: any, queryParams?: any, headers?: {[key: string]: string}): Observable<RestElement<P>>;
+  patch<P = T>(object?: Partial<P>, queryParams?: any, headers?: {[key: string]: string}): Observable<RestElement<P>>;
   remove(queryParams?: any, headers?: {[key: string]: string}): Observable<any>;
   clone(): RestElement<T>;
   plain(): T;
