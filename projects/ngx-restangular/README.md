@@ -13,7 +13,7 @@ You can check post about using ngx-restangular in [RESTful API Angular Solution]
 
 # Table of contents
 
-- [How do I add this to my project in angular 5+?](#how-do-i-add-this-to-my-project)
+- [How do I add this to my project?](#how-do-i-add-this-to-my-project)
 
 - [Dependencies](#dependencies)
 - [Starter Guide](#starter-guide)
@@ -22,6 +22,7 @@ You can check post about using ngx-restangular in [RESTful API Angular Solution]
     - [Creating Main Restangular object](#creating-main-restangular-object)
     - [Lets Code with Observables!](#lets-code-with-observables)
     - [Here is Example of code with using promises!](#here-is-example-of-code-with-using-promises)
+    - [Using TypeScript generics](#using-typescript-generics)
   - [Configuring Restangular](#configuring-restangular)
     - [Properties](#properties)
       - [withConfig](#withconfig)
@@ -321,7 +322,6 @@ export class OtherComponent {
 **[Back to top](#table-of-contents)**
 
 ### Here is Example of code with using promises!
-
 
 ```typescript
 @Component({
