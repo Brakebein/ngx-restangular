@@ -21,8 +21,7 @@ import {
   includes
 } from 'lodash';
 
-import { BehaviorSubject, Observable } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { BehaviorSubject, filter, Observable } from 'rxjs';
 
 import { RESTANGULAR } from './ngx-restangular.config';
 import { RestangularHttp } from './ngx-restangular-http';

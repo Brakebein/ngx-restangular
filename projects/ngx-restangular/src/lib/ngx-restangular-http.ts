@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpBackend, HttpErrorResponse, HttpEvent, HttpRequest, HttpResponse } from '@angular/common/http';
 
-import { throwError, Observable } from 'rxjs';
+import { catchError, filter, map, Observable, throwError } from 'rxjs';
 
-import { RestangularHelper } from './ngx-restangular-helper';
-import { catchError, filter, map } from 'rxjs/operators';
+import { RestangularHelper } from './ngx-restangular-helper';;
 
 @Injectable()
 export class RestangularHttp {
@@ -24,7 +23,7 @@ export class RestangularHttp {
       filter(event => event instanceof HttpResponse),
       map((response: any) => {
         if (!response.ok) {
-          return throwError(new HttpErrorResponse(response));
+          return throwError(() => new HttpErrorResponse(response));
         }
         return response;
       }),
@@ -39,7 +38,7 @@ export class RestangularHttp {
           return this.request(newRequest || request);
         };
 
-        return throwError(err);
+        return throwError(() => err);
       })
     );
   }
