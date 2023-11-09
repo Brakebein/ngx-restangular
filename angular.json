@@ -62,17 +62,6 @@
               "browserTarget": "ngx-restangular-demo:build:production"
             }
           }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "demo/tsconfig.app.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
-          }
         }
       }
     },
@@ -101,23 +90,10 @@
             "tsConfig": "projects/ngx-restangular/tsconfig.spec.json",
             "karmaConfig": "projects/ngx-restangular/karma.conf.js"
           }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "projects/ngx-restangular/tsconfig.lib.json",
-              "projects/ngx-restangular/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
-          }
         }
       }
     }
   },
-  "defaultProject": "ngx-restangular-demo",
   "schematics": {
     "@schematics/angular:component": {
       "prefix": "app"
@@ -125,5 +101,8 @@
     "@schematics/angular:directive": {
       "prefix": "app"
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }
