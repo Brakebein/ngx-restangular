@@ -94,7 +94,6 @@
       }
     }
   },
-  "defaultProject": "ngx-restangular-demo",
   "schematics": {
     "@schematics/angular:component": {
       "prefix": "app"
